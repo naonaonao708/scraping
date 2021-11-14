@@ -17,3 +17,5 @@ race_html = requests.get(url)
 race_html.encoding = race_html.apparent_encoding
 race_soup = BeautifulSoup(race_html.text, 'html.parser')
 print(url)
+
+race_soup.find_all("tr",class_="even")
