@@ -3,6 +3,9 @@ from selenium import webdriver
 import chromedriver_binary
 import time
 from selenium.webdriver.support.select import Select
+import pandas as pd
+import numpy as np
+
 
 def create_odds_id(axis_horse_number):
    odds_id_list = []
@@ -52,4 +55,36 @@ for axis_horse_number in range(1,17,1):
    odds_list = create_odds_list(odds_id_list)
    odds_all_list.update(odds_list)
    time.sleep(1)
+
+
+horse_list = ['01','02','03','04','05','06','07','08',
+              '09','10','11','12','13','14','15','16']
+
+# error
+total1,total2,total3 = [0]*16
+
+for key,value in odds_all_list.items():
+   value = float(value)
+   tyaku_1 = int(key[:2])
+   tyaku_2 = int(key[2:4])
+   tyaku_3 = int(key[4:6])
    
+   total1[tyaku_1-1] += value
+   total2[tyaku_2-1] += value
+   total3[tyaku_3-1] += value
+
+
+total1_dict = dict(zip(horse_list, total1))
+total2_dict = dict(zip(horse_list, total2))
+total3_dict = dict(zip(horse_list, total3))
+
+total1_sorted = sorted(total1_dict.items(), key=lambda x:x[1])
+total2_sorted = sorted(total2_dict.items(), key=lambda x:x[1])
+total3_sorted = sorted(total3_dict.items(), key=lambda x:x[1])
+
+df1 = pd.DataFrame(total1_sorted,columns=['1着馬番','1着オッズ'])
+df2 = pd.DataFrame(total2_sorted,columns=['2着馬番','2着オッズ'])
+df3 = pd.DataFrame(total3_sorted,columns=['3着馬番','3着オッズ'])
+
+df = df1.join([df2, df3])
+df['馬番'] = np.arange(1, len(df)+1)
